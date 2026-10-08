@@ -1,0 +1,573 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>FCRIT Learn</title><meta name="theme-color" content="#0b1f78"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><style>
+    body{font-family:system-ui,sans-serif;margin:0;background:linear-gradient(180deg,#f4e9ff 0%,#ffeef3 55%,#fff6dc 100%) fixed;color:#1a2233}
+    main{max-width:520px;margin:0 auto;padding:16px}
+    h1{font-size:22px;margin:4px 0 12px} h2{font-size:18px}
+    .box{background:#fff;border-radius:10px;padding:14px;margin-bottom:12px;border:1px solid #dbe5f5}
+    input,select,textarea,button{font:inherit;width:100%;padding:10px;margin:6px 0;box-sizing:border-box;border:1px solid #b9c1d1;border-radius:8px}
+    button{background:#1f5fd1;color:#fff;border:0;cursor:pointer}
+    button.link{background:none;color:#1f5fd1;width:auto;padding:4px 8px;margin:0}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .tile{background:#fff;border:1px solid #dbe5f5;border-radius:12px;padding:22px 8px;text-align:center;font-size:17px;cursor:pointer}
+    .tile span{display:block;font-size:30px;margin-bottom:6px}
+    .chk label{display:inline-block;margin-right:12px} .chk input{width:auto;margin-right:4px}
+    .tag{display:inline-block;background:#e3efff;border-radius:6px;padding:2px 8px;font-size:12px;margin-right:4px}
+    .soon{background:#ffe3e0;color:#a3170c}
+    button.pick{background:#eef5ff;color:#1f5fd1;border:2px dashed #1f5fd1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 8px;font-size:14px}
+    button.pick:active{background:#cfe2ff}
+    #wheel{position:relative;display:flex;background:#fff;border:1px solid #b9c1d1;border-radius:10px;margin:6px 0;overflow:hidden}
+    .band{position:absolute;left:0;right:0;top:50px;height:50px;background:#e3efff;pointer-events:none}
+    .col{position:relative;z-index:1;flex:1;height:150px;overflow-y:scroll;scroll-snap-type:y mandatory;padding:50px 0;box-sizing:border-box;text-align:center;scrollbar-width:none}
+    .col::-webkit-scrollbar{display:none}
+    .col div{height:50px;line-height:50px;scroll-snap-align:center;font-size:18px;color:#8a93a6}
+    .col div.sel{color:#1a2233;font-weight:700;font-size:20px}
+    .hide{display:none!important} #msg{color:#a3170c}
+    #bar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    #bar h1{margin:0}
+    #menuBtn{width:44px;height:44px;padding:0;margin:0;background:none;color:#1a2233;display:flex;align-items:center;justify-content:center;border-radius:50%}
+    #menuBtn:active{background:#dbe5f5}
+    #scrim{position:fixed;inset:0;background:rgba(15,23,42,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:10}
+    #scrim.open{opacity:1;pointer-events:auto}
+    #drawer{position:fixed;top:0;bottom:0;left:0;width:82%;max-width:320px;background:#fff;z-index:11;transform:translateX(-100%);transition:transform .25s ease;display:flex;flex-direction:column;box-shadow:2px 0 16px rgba(0,0,0,.2);overflow-y:auto}
+    #drawer.open{transform:translateX(0)}
+    .dHead{background:#1f5fd1;color:#fff;padding:28px 18px 18px}
+    .avatar{width:56px;height:56px;border-radius:50%;background:#fff;color:#1f5fd1;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;margin-bottom:10px}
+    .dHead b{font-size:18px;display:block} .dHead small{opacity:.85}
+    .dRows{padding:8px 18px;flex:1}
+    .dRow{padding:12px 0;border-bottom:1px solid #eef0f5}
+    .dRow small{display:block;color:#6b7690;font-size:12px;margin-bottom:2px}
+    .dRow span{font-size:16px}
+    .dFoot{padding:14px 18px 22px}
+    #camView{position:fixed;inset:0;background:#000;z-index:20;display:flex;flex-direction:column}
+    #camVideo{flex:1;min-height:0;width:100%;object-fit:cover;background:#000}
+    #camBar{display:flex;align-items:center;justify-content:space-around;padding:16px 12px calc(16px + env(safe-area-inset-bottom))}
+    #camBar button{width:auto;margin:0;padding:10px 16px;background:none;color:#fff;border:0}
+    #camBar #shutter{width:68px;height:68px;padding:0;border-radius:50%;background:#fff;border:4px solid #9fb3ff}
+    .done{text-align:center;padding:28px 14px}
+    #bar{margin:-16px -16px 14px;padding:10px 14px;background:linear-gradient(90deg,#1f5fd1,#1fb8a6);position:sticky;top:0;z-index:5}
+    #bar h1{color:#fff;font-size:24px;letter-spacing:.06em}
+    #menuBtn{color:#fff} #menuBtn:active{background:rgba(255,255,255,.2)}
+    #hi{font-size:22px;font-weight:700;margin:4px 2px 14px}
+    #hi small{display:block;font-size:14px;font-weight:400;color:#6b5b8a;margin-top:2px}
+    .dHead{background:linear-gradient(135deg,#1f5fd1,#1fb8a6)}
+    #splash p{margin:0;font-size:15px;opacity:.92;letter-spacing:.05em}
+    .tile{padding:20px 8px;font-weight:600;box-shadow:0 2px 10px rgba(30,40,110,.08)}
+    .tile:active{transform:scale(.97)}
+    .ic{width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+    #splash{position:fixed;inset:0;z-index:50;background:linear-gradient(160deg,#1b2f8f,#1f6fd1 55%,#1fb8a6);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .5s}
+    #splash.out{opacity:0;pointer-events:none}
+    #splashArt{width:min(88vw,360px);background:rgba(255,255,255,.14);border-radius:28px;overflow:hidden}
+    #splashArt svg,#splashArt img{display:block;width:100%;height:auto}
+    #splash h1{font-size:36px;letter-spacing:.08em;margin:0}
+    .tick{width:64px;height:64px;border-radius:50%;background:#e3f6e8;color:#1c8a3d;font-size:36px;line-height:64px;margin:0 auto 10px}
+    body{background:linear-gradient(170deg,#1b2f8f 0%,#1f6fd1 50%,#1fb8a6 100%) fixed;min-height:100vh}
+    #bar{background:rgba(10,30,100,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+    #hi{color:#fff} #hi small{color:rgba(255,255,255,.92)}
+    #secTitle{color:#fff} #backBtn{color:#fff;font-size:15px;padding:6px 0}
+    #list>p{color:#fff}
+    #msg:not(:empty){background:#fff;padding:8px 12px;border-radius:10px;font-weight:600}
+    .tile{border:0;box-shadow:0 8px 18px rgba(40,10,100,.28)}
+    .box{border:0;box-shadow:0 6px 16px rgba(40,10,100,.2)}
+    button.del{background:#fff0ee;color:#a3170c;border:1px solid #f1b8b0;width:auto;padding:8px 14px;margin:10px 0 0}
+    .filecard{display:flex;gap:14px;align-items:center;text-decoration:none;color:inherit}
+    .filecard .fi{font-size:32px}
+    .filecard small{display:block;color:#5b6b85;margin-top:2px}
+    .pdfbtn{display:inline-block;background:#eef3ff;color:#1f4fd8;border:1px solid #c9d6ff;border-radius:10px;padding:9px 14px;text-decoration:none;font-weight:600}
+    label.pick{position:relative;background:#eef3ff;color:#1f4fd8;border:2px dashed #1f4fd8;display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 8px;font-size:14px;margin:6px 0;border-radius:8px;cursor:pointer;text-align:center}
+    .vh{position:absolute!important;opacity:0;width:1px!important;height:1px!important;padding:0!important;margin:0!important;border:0!important;overflow:hidden;pointer-events:none}
+    #upMsg{color:#a3170c;font-weight:600;margin:4px 0}
+    .callbtn{display:inline-block;background:#e8f7ee;color:#0b7a3e;border:1px solid #b6e3c8;border-radius:10px;padding:10px 16px;font-weight:700;font-size:18px;text-decoration:none}
+    </style></head><body>
+    <div id="splash"><div id="splashArt">
+    <svg viewBox="0 0 320 210" xmlns="http://www.w3.org/2000/svg" aria-label="Excited students">
+    <defs><g id="st">
+    <path d="M-17 10L-31-14M17 10L31-14" stroke-width="7" stroke-linecap="round" style="stroke:var(--sk)"/>
+    <rect x="-20" y="-2" width="40" height="52" rx="16" fill="currentColor"/>
+    <circle cy="-18" r="16" style="fill:var(--sk)"/>
+    <path d="M-16-20a16 16 0 0 1 32 0q-16-8-32 0z" style="fill:var(--hr)"/>
+    <circle cx="-6" cy="-17" r="2" fill="#2b1d14"/><circle cx="6" cy="-17" r="2" fill="#2b1d14"/>
+    <path d="M-7-9q7 8 14 0z" fill="#fff" stroke="#7a2e2e" stroke-width="1.5"/>
+    </g></defs>
+    <g fill="#f5b800"><circle cx="30" cy="30" r="4"/><circle cx="290" cy="40" r="5"/><circle cx="160" cy="22" r="4"/><circle cx="95" cy="48" r="3"/><circle cx="235" cy="30" r="3"/></g>
+    <g fill="#ff7a9c"><circle cx="60" cy="22" r="3"/><circle cx="205" cy="48" r="4"/><circle cx="270" cy="75" r="3"/></g>
+    <circle cx="160" cy="118" r="88" fill="#ffd166" opacity=".28"/><circle cx="160" cy="118" r="60" fill="#ffd166" opacity=".25"/>
+    <g fill="#fff"><path transform="translate(48 70)" d="M0-9L2-2 9 0 2 2 0 9-2 2-9 0-2-2z"/><path transform="translate(272 110)" d="M0-9L2-2 9 0 2 2 0 9-2 2-9 0-2-2z"/><path transform="translate(160 54) scale(1.3)" d="M0-9L2-2 9 0 2 2 0 9-2 2-9 0-2-2z"/></g>
+    <ellipse cx="160" cy="196" rx="140" ry="9" fill="#000" opacity=".18"/>
+    <use href="#st" x="62" y="120" style="color:#f5b800;--sk:#f1c27d;--hr:#2b1d14"/>
+    <use href="#st" x="125" y="108" style="color:#ff7a9c;--sk:#c68642;--hr:#3b2314"/>
+    <use href="#st" x="195" y="112" style="color:#35c4a0;--sk:#8d5524;--hr:#1b1209"/>
+    <use href="#st" x="258" y="122" style="color:#7ab8ff;--sk:#f6d3b0;--hr:#7a4a21"/>
+    <rect x="100" y="168" width="40" height="8" rx="2" fill="#fff"/><rect x="104" y="160" width="32" height="8" rx="2" fill="#ffd166"/>
+    </svg></div><h1>FCRIT Learn</h1><p>Curious minds start here</p></div>
+    <main>
+    <div id="bar">
+      <button id="menuBtn" class="hide" aria-label="Open menu"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+      <h1 id="title">FCRIT Learn</h1>
+    </div>
+    <p id="msg"></p>
+    
+    <div id="scrim"></div>
+    <aside id="drawer" aria-hidden="true">
+      <div class="dHead"><div class="avatar" id="dAvatar"></div><b id="dName"></b><small id="dRole"></small></div>
+      <div class="dRows" id="dRows"></div>
+      <div class="dFoot"><button id="resetBtn">Change details</button></div>
+    </aside>
+    <div id="camView" class="hide">
+      <video id="camVideo" autoplay playsinline muted></video>
+      <div id="camBar"><button id="camCancel">Cancel</button><button id="shutter" aria-label="Take photo"></button><button id="camFlip">Flip</button></div>
+    </div>
+    
+    <div id="roleView" class="box hide">
+      <h2>I am a...</h2>
+      <button id="roleStudent">Student</button>
+      <button id="roleTeacher">Teacher</button>
+    </div>
+    
+    <div id="studentForm" class="box hide">
+      <h2>Your details</h2>
+      <input id="sName" placeholder="Full name">
+      <input id="sRoll" placeholder="Roll number">
+      <select id="sYear"></select>
+      <select id="sBranch"></select>
+      <select id="sDiv"></select>
+      <button id="saveStudent">Continue</button>
+    </div>
+    
+    <div id="teacherForm" class="box hide">
+      <h2>Teacher login</h2>
+      <input id="tName" placeholder="Full name">
+      <input id="tSubject" placeholder="Subject">
+      <input id="tEmail" type="email" placeholder="Teacher's email" autocomplete="username">
+      <input id="tPass" type="password" placeholder="Password" autocomplete="current-password">
+      <button id="saveTeacher">Log in</button>
+    </div>
+    
+    <div id="homeView" class="hide">
+      <p id="hi"></p>
+      <div class="grid" id="tiles"></div>
+    </div>
+    
+    <div id="sectionView" class="hide">
+      <button class="link" id="backBtn">&larr; Home</button>
+      <h2 id="secTitle"></h2>
+      <div id="postForm" class="box hide">
+        <b>Add to this section</b>
+        <input id="pPhone" type="tel" inputmode="tel" placeholder="Phone number" class="hide">
+        <input id="pTitle" placeholder="Title">
+        <textarea id="pMsg" rows="3" placeholder="Details"></textarea>
+        <input id="pLink" placeholder="Link (optional)">
+        <div id="fPhoto"><label>Add a photo (optional)</label>
+        <div class="grid">
+          <button type="button" id="camBtn" class="pick"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13.5" r="3.5"/></svg><span>Take photo</span></button>
+          <label class="pick" id="galBtn"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 9"/></svg><span>Upload from gallery</span><input id="galInput" type="file" accept="image/*" class="vh"></label>
+        </div>
+        <input id="camInput" type="file" accept="image/*" capture="environment" class="hide">
+        <div id="photoPrev" class="hide"><img id="prevImg" style="max-width:100%;border-radius:8px"> <button type="button" class="link" id="rmPhoto">Remove photo</button></div></div>
+        <div id="fPdf"><label>Attach a PDF (optional)</label>
+        <label class="pick" id="pdfBtn"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 14h6M9 17h6"/></svg><span>Choose PDF from files</span><input id="pdfInput" type="file" accept="application/pdf,.pdf" class="vh"></label>
+        <div id="pdfPrev" class="hide"><b id="pdfName"></b> <button type="button" class="link" id="rmPdf">Remove PDF</button></div></div>
+        <p id="upMsg" class="hide"></p>
+        <div id="fDate"><label>Date (optional, used for reminders)</label>
+        <label style="display:block;margin:6px 0"><input type="checkbox" id="dateOn" style="width:auto;margin-right:6px">Add a date</label>
+        <div id="wheel" class="hide"><div class="band"></div><div class="col" id="wD"></div><div class="col" id="wM"></div><div class="col" id="wY"></div></div>
+        <input id="pDate" type="hidden"></div>
+        <label>Year</label><select id="pYear"></select>
+        <label>Branch</label><select id="pBranch"></select>
+        <label>Batches</label><div id="pDivs" class="chk"></div>
+        <button id="postBtn">Post</button>
+      </div>
+      <div id="list"></div>
+    </div>
+    
+    <div id="doneView" class="box done hide">
+      <div class="tick">&#10003;</div>
+      <h2>Posted successfully</h2>
+      <p id="doneInfo"></p>
+      <button id="doneMore">Add another post</button>
+      <button id="doneHome" class="link">Back to home</button>
+    </div>
+    </main>
+    <script type="module">
+    let db, auth, deleteDoc, addDoc, collection, query, where, onSnapshot, serverTimestamp, getDoc, doc, signIn, signOutFn;
+    window.addEventListener("error", e => { document.getElementById("msg").textContent = "Error: " + e.message; });
+    
+    // 1) PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps)
+    const firebaseConfig = { apiKey:"PASTE_HERE", authDomain:"PASTE_HERE", projectId:"PASTE_HERE", appId:"PASTE_HERE" };
+    
+    // 2) EDIT THESE FOR YOUR COLLEGE
+    const YEARS = ["FE","SE","TE","BE"];
+    const BRANCHES = ["Computer Engineering","Computer Science and Engineering","Information Technology","Electronics and Telecommunication","Electrical Engineering","Mechanical Engineering"];
+    const DIVISIONS = ["1","2","3"]; // batches
+    const SECTIONS = [
+      {id:"events", name:"Events", c:"#d6336c", bg:"#fde7ef", svg:'<path d="M12 3l2.4 5 5.6.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.6-.8z"/>'},
+      {id:"timetable", name:"Timetable", c:"#1f5fd1", bg:"#e3efff", svg:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'},
+      {id:"syllabus", name:"Syllabus", c:"#7048e8", bg:"#ece6ff", svg:'<path d="M5 4h13v16H7a2 2 0 0 0-2 2zM5 4v18M9 8h6M9 12h5"/>'},
+      {id:"test", name:"Tests", c:"#d9480f", bg:"#ffe8d9", svg:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 14l2 2 4-4"/>'},
+      {id:"assignment", name:"Assignments & Projects", c:"#0b7285", bg:"#d9f3f7", svg:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'},
+      {id:"notice", name:"Notices", c:"#b07d00", bg:"#fff2cc", svg:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 20a2 2 0 0 0 4 0"/>'},
+      {id:"homework", name:"Homework", c:"#2f9e44", bg:"#dff5e3", svg:'<path d="M4 20l1-4L16 5l3 3L8 19zM14 7l3 3"/>'},
+      {id:"contacts", name:"Seniors & Teachers", c:"#c2255c", bg:"#ffe3ec", svg:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>'},
+      {id:"website", name:"Visit Website", c:"#0c8599", bg:"#d3f4f8", svg:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'}
+    ];
+    
+    // What each section asks for. Everything is optional; "all" adds All years / All branches / All batches.
+    const WEBSITE_URL = "https://fcrit.ac.in/"; // college website opened by the Visit Website tile
+    const FORM = {
+      events:     {title:"Event name", msg:"Details: venue, time, who can join", link:"Registration link", photo:1, date:1, all:1},
+      timetable:  {title:"Title, e.g. SE Comp Div A, Sem 1", msg:"Notes", link:0, photo:1, date:0, all:0},
+      test:       {title:"Subject or test name", msg:"Syllabus or instructions", link:"Link", photo:1, date:1, all:0},
+      assignment: {title:"Assignment or project name", msg:"Details", link:"Submission link", photo:1, date:1, all:0},
+      notice:     {title:"Notice title", msg:"Details", link:"Link", photo:1, date:1, all:1},
+      homework:   {title:"Subject", msg:"Homework details", link:"Link", photo:1, date:1, all:0},
+      syllabus:   {title:"Title, e.g. SE Comp Sem 3 Syllabus", msg:0, link:0, photo:1, date:0, all:0},
+      contacts:   {title:"", msg:"Details: name, year or subject, when to call", link:0, photo:0, date:0, all:1, contact:1}
+    };
+    
+    // Posts that ship inside the app. To remove one, delete its block from this list.
+    const BUILT_IN = [{
+      id: "builtin-em-a1", section: "assignment", years: ["FE"],
+      title: "Engineering Mechanics: Assignment No. 01",
+      file: "assignments/Assignment_No_1.pdf",
+      author: "Dept. of Basic Science & Humanities", subject: "ESC 101 Engineering Mechanics", date: null, image: null
+    }];
+    const fileHref = f => f;   // where a card's file lives
+    const PDFS = {};
+    const builtIn = id => me && me.role === "student" ? BUILT_IN.filter(p => p.section === id && p.years.includes(me.year)) : [];
+    const $ = id => document.getElementById(id);
+    const SPLASH_IMG = ""; // paste a photo link or data URL here to show a real photo instead of the drawing
+    if (SPLASH_IMG) $("splashArt").innerHTML = `<img src="${SPLASH_IMG}" alt="">`;
+    setTimeout(() => { $("splash").classList.add("out"); setTimeout(() => $("splash").remove(), 600); }, 2500);
+    const localPosts = () => JSON.parse(localStorage.getItem("fcritPosts") || "[]");
+    
+    async function initFirebase() {
+      if (firebaseConfig.apiKey === "PASTE_HERE") return; // no config yet: demo mode (this device only)
+      try {
+        const A = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+        const F = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+        const U = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+        const app = A.initializeApp(firebaseConfig);
+        db = F.getFirestore(app);
+        ({ deleteDoc, addDoc, collection, query, where, onSnapshot, serverTimestamp, getDoc, doc } = F);
+        auth = U.getAuth(app);
+        signIn = U.signInWithEmailAndPassword; signOutFn = U.signOut;
+        await auth.authStateReady();
+      } catch (e) {
+        db = null; // could not load Firebase: stay in demo mode (this device only)
+      }
+    }
+    
+    const VIEWS = ["roleView","studentForm","teacherForm","homeView","sectionView","doneView"];
+    const show = id => {
+      VIEWS.forEach(v => $(v).classList.add("hide")); $(id).classList.remove("hide");
+      $("menuBtn").classList.toggle("hide", !(id === "homeView" || id === "sectionView"));
+      closeMenu(); window.scrollTo(0, 0);
+    };
+    const fill = (el, list) => el.innerHTML = list.map(x => `<option>${x}</option>`).join("");
+    const upErr = m => { const e = $("upMsg"); e.textContent = m || ""; e.classList.toggle("hide", !m); };
+    const err = m => { $("msg").textContent = m || ""; if (m) window.scrollTo(0, 0); };
+    const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+    
+    [$("sYear"), $("pYear")].forEach(e => fill(e, YEARS));
+    [$("sBranch"), $("pBranch")].forEach(e => fill(e, BRANCHES));
+    $("sDiv").innerHTML = DIVISIONS.map(d => `<option value="${d}">Batch ${d}</option>`).join("");
+    $("pDivs").innerHTML = DIVISIONS.map(d => `<label><input type="checkbox" value="${d}">${d}</label>`).join("");
+    
+    // Student details are saved on this phone/browser. Teachers must log in.
+    let me = JSON.parse(localStorage.getItem("fcritUser") || "null");
+    let unsub = null, current = null;
+    
+    function start() {
+      err("");
+      // teacher saved on device but no longer logged in to Firebase: ask to log in again
+      if (me && me.role === "teacher" && db && !auth.currentUser) { me = null; localStorage.removeItem("fcritUser"); }
+      if (!me) return show("roleView");
+      fillDrawer();
+      $("hi").innerHTML = "Hi, " + esc((me.name || "").trim().split(" ")[0]) + "<small>Ready to learn something new today?</small>";
+      $("tiles").innerHTML = SECTIONS.map(s => `<div class="tile" data-id="${s.id}"><div class="ic" style="background:${s.bg};color:${s.c}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${s.svg}</svg></div>${s.name}</div>`).join("");
+      show("homeView");
+    }
+    // ---- side menu (three-line icon) ----
+    function openMenu() { $("drawer").classList.add("open"); $("scrim").classList.add("open"); $("drawer").setAttribute("aria-hidden","false"); }
+    function closeMenu() { $("drawer").classList.remove("open"); $("scrim").classList.remove("open"); $("drawer").setAttribute("aria-hidden","true"); }
+    function fillDrawer() {
+      const rows = me.role === "student"
+        ? [["Name", me.name], ["Roll number", me.roll], ["Year", me.year], ["Branch", me.branch], ["Batch", me.div]]
+        : [["Name", me.name], ["Subject", me.subject], ["Email", me.email]];
+      $("dAvatar").textContent = (me.name || "?").trim().charAt(0).toUpperCase();
+      $("dName").textContent = me.name;
+      $("dRole").textContent = me.role === "student" ? "Student" : "Teacher";
+      $("dRows").innerHTML = rows.filter(r => r[1]).map(r => `<div class="dRow"><small>${r[0]}</small><span>${esc(r[1])}</span></div>`).join("");
+    }
+    $("menuBtn").onclick = openMenu;
+    $("scrim").onclick = closeMenu;
+    document.addEventListener("keydown", e => { if (e.key === "Escape") closeMenu(); });
+    
+    $("tiles").onclick = e => {
+      const t = e.target.closest(".tile"); if (!t) return;
+      if (t.dataset.id === "website") return void window.open(WEBSITE_URL, "_blank", "noopener");
+      openSection(t.dataset.id);
+    };
+    $("resetBtn").onclick = async () => {
+      localStorage.removeItem("fcritUser"); me = null;
+      if (auth && signOutFn) try { await signOutFn(auth); } catch (e) {}
+      start();
+    };
+    
+    // ---- role + basic info ----
+    $("roleStudent").onclick = () => show("studentForm");
+    $("roleTeacher").onclick = () => show("teacherForm");
+    
+    $("saveStudent").onclick = () => {
+      if (!$("sName").value.trim() || !$("sRoll").value.trim()) return err("Enter your name and roll number.");
+      me = { role:"student", name:$("sName").value.trim(), roll:$("sRoll").value.trim(), year:$("sYear").value, branch:$("sBranch").value, div:$("sDiv").value };
+      localStorage.setItem("fcritUser", JSON.stringify(me));
+      start();
+    };
+    
+    $("saveTeacher").onclick = async () => {
+      let name = $("tName").value.trim(), subject = $("tSubject").value.trim();
+      if (!name || !subject) return err("Enter your name and subject.");
+      let uid = null;
+      if (db) {
+        const email = $("tEmail").value.trim(), pass = $("tPass").value;
+        if (!email || !pass) return err("Enter your college email and password.");
+        try {
+          const cred = await signIn(auth, email, pass);
+          uid = cred.user.uid;
+          const ok = await getDoc(doc(db, "teachers", uid)); // only approved teachers have this document
+          if (!ok.exists()) { await signOutFn(auth); return err("This account is not approved as a teacher. Ask the admin."); }
+          const rec = ok.data() || {}; if (rec.name) name = rec.name; if (rec.subject) subject = rec.subject;
+        } catch (e) { return err("Login failed: check your email and password."); }
+        $("tPass").value = "";
+      }
+      me = { role:"teacher", name, subject, uid, email: $("tEmail").value.trim() };
+      localStorage.setItem("fcritUser", JSON.stringify(me));
+      start();
+    };
+    
+    // ---- sections ----
+    function openSection(id) {
+      current = SECTIONS.find(s => s.id === id);
+      $("secTitle").textContent = current.name;
+      $("postForm").classList.toggle("hide", me.role !== "teacher");
+      if (me.role === "teacher") configureForm();
+      show("sectionView");
+      if (unsub) unsub();
+      if (!db) return showLocal();
+      // students: only their class. teachers: only their own posts in this section.
+      const q = me.role === "student"
+        ? query(collection(db,"posts"), where("section","==",id), where("targets","array-contains",`${me.year}_${me.branch}_${me.div}`))
+        : query(collection(db,"posts"), where("section","==",id), where("authorUid","==",me.uid));
+      unsub = onSnapshot(q, snap => {
+        const items = builtIn(id).concat(snap.docs.map(d => ({ ...d.data(), id: d.id })).sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0)));
+        $("list").innerHTML = items.map(card).join("") || "<p>Nothing here yet.</p>";
+      }, e => err(e.message));
+    }
+    
+    function configureForm() {
+      const c = FORM[current.id];
+      $("postForm").querySelector("b").textContent = "Add to " + current.name;
+      $("pTitle").placeholder = c.title + " (optional)";
+      $("pMsg").classList.toggle("hide", !c.msg);
+      if (c.msg) $("pMsg").placeholder = c.msg + " (optional)";
+      $("pLink").classList.toggle("hide", !c.link);
+      if (c.link) $("pLink").placeholder = c.link + " (optional)";
+      $("pTitle").value = $("pMsg").value = $("pLink").value = "";
+      $("pTitle").classList.toggle("hide", !!c.contact);
+      $("pPhone").classList.toggle("hide", !c.contact); $("pPhone").value = "";
+      $("fPdf").classList.toggle("hide", !!c.contact);
+      if (c.contact) $("pMsg").placeholder = c.msg;
+      $("fPhoto").classList.toggle("hide", !c.photo);
+      $("fDate").classList.toggle("hide", !c.date);
+      setDateOn(false); setPhoto(null); setPdf(null);
+      $("pYear").innerHTML = (c.all ? '<option value="ALL">All years</option>' : "") + YEARS.map(x => `<option>${x}</option>`).join("");
+      $("pBranch").innerHTML = (c.all ? '<option value="ALL">All branches</option>' : "") + BRANCHES.map(x => `<option>${x}</option>`).join("");
+      $("pDivs").innerHTML = (c.all ? '<label><input type="checkbox" value="ALL">All batches</label>' : "")
+        + DIVISIONS.map(d => `<label><input type="checkbox" value="${d}">${d}</label>`).join("");
+    }
+    
+    function showLocal() {
+      const mine = `${me.year}_${me.branch}_${me.div}`;
+      const items = builtIn(current.id).concat(localPosts().filter(p => p.section === current.id && (me.role === "student" ? p.targets.includes(mine) : p.author === me.name))
+        .sort((a,b) => b.createdAt - a.createdAt));
+      $("list").innerHTML = (me.role === "student" ? "" : "<p><small>Demo mode: posts are saved on this device only.</small></p>")
+        + (items.map(card).join("") || "<p>Nothing here yet.</p>");
+    }
+    $("backBtn").onclick = () => { if (unsub) unsub(); start(); };
+    
+    // ---- clock-style date wheel ----
+    const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const yr = new Date().getFullYear();
+    const cols = { D: $("wD"), M: $("wM"), Y: $("wY") };
+    cols.D.innerHTML = Array.from({length:31}, (_,i) => `<div>${i+1}</div>`).join("");
+    cols.M.innerHTML = MONTHS.map(m => `<div>${m}</div>`).join("");
+    cols.Y.innerHTML = [0,1,2,3].map(i => `<div>${yr+i}</div>`).join("");
+    const idx = c => Math.round(c.scrollTop / 50);
+    function readWheel() {
+      let d = idx(cols.D) + 1; const m = idx(cols.M), y = yr + idx(cols.Y);
+      const max = new Date(y, m + 1, 0).getDate();
+      if (d > max) { d = max; cols.D.scrollTo({ top: (d-1)*50, behavior: "smooth" }); }
+      Object.values(cols).forEach(c => [...c.children].forEach((el, i) => el.classList.toggle("sel", i === idx(c))));
+      $("pDate").value = `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    }
+    let wt;
+    Object.values(cols).forEach(c => c.addEventListener("scroll", () => { clearTimeout(wt); wt = setTimeout(readWheel, 80); }));
+    function setDateOn(on) {
+      $("dateOn").checked = on; $("wheel").classList.toggle("hide", !on);
+      if (on) { const n = new Date(); cols.D.scrollTop = (n.getDate()-1)*50; cols.M.scrollTop = n.getMonth()*50; cols.Y.scrollTop = 0; readWheel(); }
+      else $("pDate").value = "";
+    }
+    $("dateOn").onchange = () => setDateOn($("dateOn").checked);
+    
+    let photoData = null;
+    async function toDataUrl(file, max, q) {
+      let src, w, h;
+      try { src = await createImageBitmap(file, { imageOrientation: "from-image" }); w = src.width; h = src.height; }
+      catch (e) {
+        const url = await new Promise((ok, bad) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = bad; r.readAsDataURL(file); });
+        src = await new Promise((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = bad; i.src = url; });
+        w = src.naturalWidth; h = src.naturalHeight;
+      }
+      const k = Math.min(1, max / Math.max(w, h));
+      const c = document.createElement("canvas"); c.width = Math.round(w * k); c.height = Math.round(h * k);
+      c.getContext("2d").drawImage(src, 0, 0, c.width, c.height);
+      let out = c.toDataURL("image/jpeg", q); if (out.length > 800000) out = c.toDataURL("image/jpeg", 0.4); return out;
+    }
+    const setPhoto = async f => {
+      photoData = null; $("photoPrev").classList.add("hide"); upErr("");
+      if (!f) return;
+      try { const big = current && ["timetable","syllabus"].includes(current.id); photoData = await toDataUrl(f, big ? 1400 : 900, big ? 0.7 : 0.6); $("prevImg").src = photoData; $("photoPrev").classList.remove("hide"); upErr(""); }
+      catch (e) { upErr("Could not read that photo. Use the in-app camera, or pick a JPG or PNG from your gallery."); }
+    };
+    let camStream = null, camFacing = "environment";
+    async function openCam() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return $("camInput").click(); // browser without live camera
+      try {
+        camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: camFacing }, audio: false });
+        $("camVideo").srcObject = camStream; $("camView").classList.remove("hide");
+      } catch (e) { err("Camera not available. Allow camera permission for this page, or use Upload from gallery."); }
+    }
+    function closeCam() {
+      if (camStream) camStream.getTracks().forEach(t => t.stop());
+      camStream = null; $("camVideo").srcObject = null; $("camView").classList.add("hide");
+    }
+    $("camBtn").onclick = openCam;
+    $("camCancel").onclick = closeCam;
+    $("camFlip").onclick = () => { camFacing = camFacing === "environment" ? "user" : "environment"; closeCam(); openCam(); };
+    $("shutter").onclick = () => {
+      const v = $("camVideo"); if (!v.videoWidth) return;
+      const c = document.createElement("canvas"); c.width = v.videoWidth; c.height = v.videoHeight;
+      c.getContext("2d").drawImage(v, 0, 0);
+      c.toBlob(b => { if (b) setPhoto(new File([b], "photo.jpg", { type: "image/jpeg" })); closeCam(); }, "image/jpeg", 0.9);
+    };
+    $("doneMore").onclick = () => openSection(current.id);
+    $("doneHome").onclick = () => { if (unsub) unsub(); start(); };
+    $("camInput").onchange = async e => { await setPhoto(e.target.files[0]); e.target.value = ""; };
+    $("galInput").onchange = async e => { await setPhoto(e.target.files[0]); e.target.value = ""; };
+    $("rmPhoto").onclick = () => setPhoto(null);
+    
+    let pdfData = null, pdfFile = "";
+    const PDF_MAX = 700 * 1024;   // a PDF is stored inside the post, so it has to stay small
+    function setPdf(f) {
+      pdfData = null; pdfFile = ""; $("pdfPrev").classList.add("hide"); upErr("");
+      if (!f) return Promise.resolve();
+      if (f.type !== "application/pdf" && !/\.pdf$/i.test(f.name)) { upErr("That is not a PDF file."); return Promise.resolve(); }
+      if (f.size > PDF_MAX) { upErr(`That PDF is ${(f.size / 1048576).toFixed(1)} MB. The limit is 0.7 MB. Compress it first (for example on ilovepdf.com), or share a link instead.`); return Promise.resolve(); }
+      return new Promise(done => {
+        const r = new FileReader();
+        r.onload = () => { pdfData = String(r.result).replace(/^data:[^;]*;/, "data:application/pdf;"); pdfFile = f.name; $("pdfName").textContent = `📄 ${f.name} (${Math.round(f.size / 1024)} KB)`; $("pdfPrev").classList.remove("hide"); done(); };
+        r.onerror = () => { upErr("Could not read that PDF. Try choosing it again."); done(); };
+        r.readAsDataURL(f);
+      });
+    }
+    $("pdfInput").onchange = async e => { await setPdf(e.target.files[0]); e.target.value = ""; };
+    $("rmPdf").onclick = () => setPdf(null);
+    
+    $("postBtn").onclick = async () => {
+      let divs = [...document.querySelectorAll("#pDivs input:checked")].map(c => c.value);
+      const file = photoData, pdf = pdfData;
+      const isContact = !!FORM[current.id].contact, phone = $("pPhone").value.trim();
+      if (isContact) {
+        if (!/^\+?[0-9][0-9\s\-]{6,14}$/.test(phone)) return err("Enter a valid phone number, for example 98XXXXXXXX.");
+        if (!$("pMsg").value.trim()) return err("Add the details: name and when to call.");
+      }
+      // nothing is compulsory, but a post needs something in it and someone to receive it
+      if (!$("pTitle").value.trim() && !$("pMsg").value.trim() && !$("pLink").value.trim() && !$("pDate").value && !file && !pdf)
+        return err("Fill in whatever you need: a title, details, link, photo, PDF or date.");
+      if ((file || "").length + (pdf || "").length > 900000) return err("The photo and PDF together are too big for one post. Post them separately.");
+      if (!divs.length) return err("Choose who should see this: pick at least one batch.");
+      const y = $("pYear").value, b = $("pBranch").value;
+      if (divs.includes("ALL")) divs = DIVISIONS;
+      const ys = y === "ALL" ? YEARS : [y], bs = b === "ALL" ? BRANCHES : [b];
+      const targets = ys.flatMap(a => bs.flatMap(c => divs.map(d => `${a}_${c}_${d}`)));
+      const audience = [y === "ALL" ? "All years" : y, b === "ALL" ? "All branches" : b,
+        divs.length === DIVISIONS.length ? "All batches" : "Batch " + divs.join(", ")].join(" · ");
+      $("postBtn").disabled = true; $("postBtn").textContent = "Posting…";
+      try {
+        const post = {
+          section: current.id,
+          title: $("pTitle").value.trim() || current.name,
+          message: $("pMsg").value.trim(),
+          link: $("pLink").value.trim() || null,
+          date: $("pDate").value || null,
+          image: file,
+          pdf, pdfName: pdf ? pdfFile : null,
+          phone: isContact ? phone : null,
+          targets, audience,
+          author: me.name, authorUid: me.uid || null, subject: me.subject
+        };
+        if (!db) { const all = localPosts(); all.push({ ...post, id: "L" + Date.now() + Math.random().toString(36).slice(2, 6), createdAt: Date.now() }); localStorage.setItem("fcritPosts", JSON.stringify(all)); }
+        else { await addDoc(collection(db,"posts"), { ...post, createdAt: serverTimestamp() }); }
+        $("pTitle").value = $("pMsg").value = $("pLink").value = "";
+        setDateOn(false); setPhoto(null); setPdf(null); err("");
+        $("doneInfo").textContent = `${current.name} · Visible to ${audience}`;
+        show("doneView");
+      } catch (e) { err(e.message); } finally { $("postBtn").disabled = false; $("postBtn").textContent = "Post"; }
+    };
+    
+    // ---- card with reminder countdown ----
+    function card(p) {
+      if (/^assignments\/[\w.\-]+\.pdf$/i.test(p.file || "")) {
+        return `<a class="box filecard" href="${esc(fileHref(p.file))}" target="_blank" rel="noopener"><span class="fi">📄</span><span><b>${esc(p.title)}</b><small>${esc(p.author)}</small></span></a>`;
+      }
+      let rem = "";
+      if (p.date) {
+        // "T00:00:00" makes this local midnight, so the day count is right in IST
+        const days = Math.round((new Date(p.date + "T00:00:00") - new Date().setHours(0,0,0,0)) / 86400000);
+        rem = days > 1 ? `<span class="tag ${days<=3?"soon":""}">in ${days} days</span>`
+            : days === 1 ? `<span class="tag soon">Tomorrow</span>`
+            : days === 0 ? `<span class="tag soon">Today</span>`
+            : `<span class="tag">Done</span>`;
+        rem += `<span class="tag">${esc(p.date)}</span>`;
+      }
+      const img = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(p.image || "") ? `<img src="${p.image}" alt="" style="max-width:100%;border-radius:8px">` : "";
+      const link = p.link && /^(https?:\/\/|assignments\/[\w.\-]+\.pdf$)/i.test(p.link) ? `<p><a href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.linkText || "Open link")}</a></p>` : "";
+      const pdfOk = /^data:application\/pdf;base64,[A-Za-z0-9+\/=]+$/.test(p.pdf || "");
+      if (pdfOk) PDFS["p" + (p.id || p.createdAt)] = p.pdf;
+      const pdfBtn = pdfOk ? `<p><a class="pdfbtn" href="#" data-pdf="p${esc(p.id || p.createdAt)}">📄 ${esc(p.pdfName || "Open PDF")}</a></p>` : "";
+      const phoneOk = /^\+?[0-9][0-9\s\-]{6,14}$/.test(p.phone || "");
+      const head = phoneOk ? `<a class="callbtn" href="tel:${esc(String(p.phone).replace(/[^\d+]/g, ""))}">📞 ${esc(p.phone)}</a>` : `<b>${esc(p.title)}</b>`;
+      const tg = me.role !== "teacher" ? "" : p.audience ? `<div><span class="tag">${esc(p.audience)}</span></div>`
+        : `<div>${p.targets.map(t => `<span class="tag">${esc(t.replaceAll("_"," "))}</span>`).join("")}</div>`;
+      return `<div class="box">${head}<div>${rem}</div><p>${esc(p.message)}</p>${img}${link}${pdfBtn} <small>${esc(p.author)} · ${esc(p.subject)}</small>${tg}${me.role === "teacher" && p.author === me.name ? `<div><button class="del" data-id="${esc(p.id || p.createdAt)}">Delete this post</button></div>` : ""}</div>`;
+    }
+    
+    $("list").addEventListener("click", e => {
+      const a = e.target.closest("[data-pdf]"); if (!a) return;
+      e.preventDefault();
+      const d = PDFS[a.dataset.pdf]; if (!d) return;
+      const bytes = Uint8Array.from(atob(d.split(",")[1]), c => c.charCodeAt(0));
+      window.open(URL.createObjectURL(new Blob([bytes], { type: "application/pdf" })), "_blank");
+    });
+    $("list").addEventListener("click", async e => {
+      const b = e.target.closest(".del"); if (!b) return;
+      if (!confirm("Delete this post? Students will no longer see it.")) return;   // Cancel keeps the post
+      try {
+        if (!db) { localStorage.setItem("fcritPosts", JSON.stringify(localPosts().filter(p => String(p.id || p.createdAt) !== b.dataset.id))); showLocal(); }
+        else await deleteDoc(doc(db, "posts", b.dataset.id));   // the list updates by itself
+      } catch (er) { err(er.message); }
+    });
+    if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(() => {});
+    await initFirebase();
+    start();
+    </script></body></html>
+    
