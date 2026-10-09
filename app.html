@@ -326,22 +326,23 @@
     $("saveTeacher").onclick = async () => {
       let name = $("tName").value.trim(), subject = $("tSubject").value.trim();
       if (!name || !subject) return err("Enter your name and subject.");
-      let uid = null;
-      if (db) {
-        const email = $("tEmail").value.trim();
-        if (!email) return err("Enter your college email and password.");
-        try {
+      
+  const email = $("tEmail").value.trim().toLowerCase();
+  const FIXED_TEACHER_EMAIL = "kurhadepranav14@gmail.com";
+
+  if (!email) return err("Enter your email.");
+  if (email !== FIXED_TEACHER_EMAIL) {
+    return err("This email is not authorized as the teacher.");
+  }
+
+  let uid = email;
+  me = { role: "teacher", name, subject, uid, email };
+  localStorage.setItem("fcritUser", JSON.stringify(me));
+  start();
+};
         
-          const ok = await getDoc(doc(db, "teachers", email.toLowerCase())); // only approved teachers have this document
-          if (!ok.exists()) { await signOutFn(auth); return err("This account is not approved as a teacher. Ask the admin."); }
-          const rec = ok.data() || {}; if (rec.name) name = rec.name; if (rec.subject) subject = rec.subject;
-        } catch (e) { return err("Login failed ("+ (e.code || e.message)+"): check your email and password."); }
-       
-      }
-      me = { role:"teacher", name, subject, uid, email: $("tEmail").value.trim() };
-      localStorage.setItem("fcritUser", JSON.stringify(me));
       start();
-    };
+    ;
     
     // ---- sections ----
     function openSection(id) {
