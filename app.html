@@ -187,7 +187,7 @@
     </div>
     </main>
     <script type="module">
-    let db, auth, deleteDoc, addDoc, collection, query, where, onSnapshot, serverTimestamp, getDoc, doc, signIn, signOutFn;
+    let db, auth, deleteDoc, addDoc, collection, query, where, onSnapshot, serverTimestamp, getDoc, doc, signIn, signOutFn, GoogleAuthProvider , signInWithPopup;
     window.addEventListener("error", e => { document.getElementById("msg").textContent = "Error: " + e.message; });
     
     // 1) PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps)
@@ -249,6 +249,7 @@
         ({ deleteDoc, addDoc, collection, query, where, onSnapshot, serverTimestamp, getDoc, doc } = F);
         auth = U.getAuth(app);
         signIn = U.signInWithEmailAndPassword; signOutFn = U.signOut;
+        ({ GoogleAuthProvider , signInWuthPopup} = U)
         await auth.authStateReady();
       } catch (e) {
         db = null; // could not load Firebase: stay in demo mode (this device only)
@@ -278,7 +279,7 @@
     function start() {
       err("");
       // teacher saved on device but no longer logged in to Firebase: ask to log in again
-      // if (me && me.role === "teacher" && db && !auth.currentUser) { me = null; localStorage.removeItem("fcritUser"); }
+      // if (me && me.rol e === "teacher" && db && !auth.currentUser) { me = null; localStorage.removeItem("fcritUser"); }
       if (!me) return show("roleView");
       fillDrawer();
       $("hi").innerHTML = "Hi, " + esc((me.name || "").trim().split(" ")[0]) + "<small>Ready to learn something new today?</small>";
@@ -323,27 +324,21 @@
       start();
     };
     
-    $("saveTeacher").onclick = async () => {
-      let name = $("tName").value.trim(), subject = $("tSubject").value.trim();
-      if (!name || !subject) return err("Enter your name and subject.");
-      
-  const email = $("tEmail").value.trim().toLowerCase();
-  const FIXED_TEACHER_EMAIL = "kurhadepranav14@gmail.com";
-
-  if (!email) return err("Enter your email.");
-  if (email !== FIXED_TEACHER_EMAIL) {
-    return err("This email is not authorized as the teacher.");
-  }
-
-  let uid = email;
-  me = { role: "teacher", name, subject, uid, email };
-  localStorage.setItem("fcritUser", JSON.stringify(me));
-  start();
-
-    };        
-
-
     
+      $("saveTeacher").onclick = async () => {
+  const name = $("tName").value.trim(), subject = $("tSubject").value.trim();
+  if (!name || !subject) return err("Enter your name and subject.");
+  try {
+    const r = await signInWithPopup(auth, new GoogleAuthProvider());
+    const email = r.user.email.toLowerCase();
+    if (email !== "kurhadepranav14@gmail.com") { await signOutFn(auth); return err("This account is not authorized."); }
+    me = { role:"teacher", name, subject, uid:r.user.uid, email };
+    localStorage.setItem("fcritUser", JSON.stringify(me));
+    start();
+  } catch (e) { err(e.message); }
+};
+
+
     // ---- sections ----
     function openSection(id) {
       current = SECTIONS.find(s => s.id === id);
