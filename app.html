@@ -278,7 +278,7 @@
     function start() {
       err("");
       // teacher saved on device but no longer logged in to Firebase: ask to log in again
-      if (me && me.role === "teacher" && db && !auth.currentUser) { me = null; localStorage.removeItem("fcritUser"); }
+      // if (me && me.role === "teacher" && db && !auth.currentUser) { me = null; localStorage.removeItem("fcritUser"); }
       if (!me) return show("roleView");
       fillDrawer();
       $("hi").innerHTML = "Hi, " + esc((me.name || "").trim().split(" ")[0]) + "<small>Ready to learn something new today?</small>";
