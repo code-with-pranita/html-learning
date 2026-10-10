@@ -539,10 +539,10 @@ function watchNew() {
         if (!$("pMsg").value.trim()) return err("Add the details: name and when to call.");
       }
       // nothing is compulsory, but a post needs something in it and someone to receive it
-      // if (!$("pTitle").value.trim() && !$("pMsg").value.trim() && !$("pLink").value.trim() && !$("pDate").value && !file && !pdf)
-      //   return err("Fill in whatever you need: a title, details, link, photo, PDF or date.");
-      if (!$("pTitle").value.trim() && !$("pMsg").value.trim() && !$("pLink").value.trim() && !file && !pdf)
-  return err("Add something to post: a title, a link, a photo or a PDF.");
+      if (!$("pTitle").value.trim() && !$("pMsg").value.trim() && !$("pLink").value.trim() && !$("pDate").value && !file && !pdf)
+         return err("Fill in whatever you need: a title, details, link, photo, PDF or date.");
+  //     if (!$("pTitle").value.trim() && !$("pMsg").value.trim() && !$("pLink").value.trim() && !file && !pdf)
+  // return err("Add something to post: a title, a link, a photo or a PDF.");
       if ((file || "").length + (pdf || "").length > 900000) return err("The photo and PDF together are too big for one post. Post them separately.");
       if (!divs.length) return err("Choose who should see this: pick at least one batch.");
       const y = $("pYear").value, b = $("pBranch").value;
