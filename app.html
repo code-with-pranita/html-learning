@@ -76,6 +76,7 @@
     .vh{position:absolute!important;opacity:0;width:1px!important;height:1px!important;padding:0!important;margin:0!important;border:0!important;overflow:hidden;pointer-events:none}
     #upMsg{color:#a3170c;font-weight:600;margin:4px 0}
     .callbtn{display:inline-block;background:#e8f7ee;color:#0b7a3e;border:1px solid #b6e3c8;border-radius:10px;padding:10px 16px;font-weight:700;font-size:18px;text-decoration:none}
+    .tile{position:relative} .nb{position:absolute;top:8px;right:10px;background:#e03131;color:#fff;border-radius:999px;min-width:22px;height:22px;line-height:22px;font-size:13px;font-weight:700;padding:0 6px;text-align:center}
     </style></head><body>
     <div id="splash"><div id="splashArt">
     <svg viewBox="0 0 320 210" xmlns="http://www.w3.org/2000/svg" aria-label="Excited students">
@@ -286,7 +287,28 @@
       $("hi").innerHTML = "Hi, " + esc((me.name || "").trim().split(" ")[0]) + "<small>Ready to learn something new today?</small>";
       $("tiles").innerHTML = SECTIONS.map(s => `<div class="tile" data-id="${s.id}"><div class="ic" style="background:${s.bg};color:${s.c}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${s.svg}</svg></div>${s.name}</div>`).join("");
       show("homeView");
-    }
+      watchNew();}
+    let unsubNew = null;
+function watchNew() {
+  if (unsubNew) unsubNew();
+  if (!db || me.role !== "student") return;
+  if (!localStorage.getItem("fcritFirst")) localStorage.setItem("fcritFirst", Date.now());
+  const q = query(collection(db,"posts"), where("targets","array-contains",`${me.year}_${me.branch}_${me.div}`));
+  unsubNew = onSnapshot(q, snap => {
+    const counts = {};
+    snap.docs.forEach(d => {
+      const p = d.data(), t = (p.createdAt?.seconds || 0) * 1000;
+      const last = Number(localStorage.getItem("fcritSeen_" + p.section) || localStorage.getItem("fcritFirst"));
+      if (t > last) counts[p.section] = (counts[p.section] || 0) + 1;
+    });
+    document.querySelectorAll(".tile").forEach(el => {
+      el.querySelector(".nb")?.remove();
+      const n = counts[el.dataset.id];
+      if (n) el.insertAdjacentHTML("beforeend", `<span class="nb">${n}</span>`);
+    });
+  });
+}
+    
     // ---- side menu (three-line icon) ----
     function openMenu() { $("drawer").classList.add("open"); $("scrim").classList.add("open"); $("drawer").setAttribute("aria-hidden","false"); }
     function closeMenu() { $("drawer").classList.remove("open"); $("scrim").classList.remove("open"); $("drawer").setAttribute("aria-hidden","true"); }
@@ -347,6 +369,7 @@
     // ---- sections ----
     function openSection(id) {
       current = SECTIONS.find(s => s.id === id);
+      if (me.role === "student") localStorage.setItem("fcritSeen_" + id, Date.now());
       $("secTitle").textContent = current.name;
       $("postForm").classList.toggle("hide", me.role !== "teacher");
       if (me.role === "teacher") configureForm();
