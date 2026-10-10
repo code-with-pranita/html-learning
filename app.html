@@ -594,8 +594,7 @@ function watchNew() {
             : `<span class="tag">Done</span>`;
         rem += `<span class="tag">${esc(p.date)}</span>`;
       }
-      if (!$("pTitle").value.trim() && !$("pMsg").value.trim() && !$("pLink").value.trim() && !file && !pdf)
-      return err("Add something to post: text, a link, a photo or a PDF.");
+      const img = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(p.image || "") ? `<img class="thumb" src="${p.image}" alt="">` : "";
       const link = p.link && /^(https?:\/\/|assignments\/[\w.\-]+\.pdf$)/i.test(p.link) ? `<p><a href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.linkText || "Open link")}</a></p>` : "";
       const pdfOk = /^data:application\/pdf;base64,[A-Za-z0-9+\/=]+$/.test(p.pdf || "");
       if (pdfOk) PDFS["p" + (p.id || p.createdAt)] = p.pdf;
