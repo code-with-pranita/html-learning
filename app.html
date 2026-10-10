@@ -75,6 +75,9 @@
     label.pick{position:relative;background:#eef3ff;color:#1f4fd8;border:2px dashed #1f4fd8;display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 8px;font-size:14px;margin:6px 0;border-radius:8px;cursor:pointer;text-align:center}
     .vh{position:absolute!important;opacity:0;width:1px!important;height:1px!important;padding:0!important;margin:0!important;border:0!important;overflow:hidden;pointer-events:none}
     #upMsg{color:#a3170c;font-weight:600;margin:4px 0}
+    .thumb{width:100%;max-height:180px;object-fit:cover;border-radius:8px;cursor:pointer}
+#imgView{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:40;display:flex;align-items:center;justify-content:center}
+#imgBig{max-width:100%;max-height:100%;object-fit:contain}
     .callbtn{display:inline-block;background:#e8f7ee;color:#0b7a3e;border:1px solid #b6e3c8;border-radius:10px;padding:10px 16px;font-weight:700;font-size:18px;text-decoration:none}
     .tile{position:relative} .tile .nb{position:absolute;top:-6px;right:-4px;margin:0;display:flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 7px;box-sizing:border-box;border-radius:999px;background:linear-gradient(135deg,#ff5a5f,#e03131);color:#fff;font-size:14px;font-weight:800;line-height:1;border:2px solid #fff;box-shadow:0 4px 10px rgba(224,49,49,.5);animation:nbp 1.6s ease-in-out infinite} @keyframes nbp{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
     </style></head><body>
@@ -112,6 +115,8 @@
       <div class="dRows" id="dRows"></div>
       <div class="dFoot"><button id="resetBtn">Change details</button></div>
     </aside>
+    <div id="imgView" class="hide"><img id="imgBig" alt=""></div>
+    
     <div id="camView" class="hide">
       <video id="camVideo" autoplay playsinline muted></video>
       <div id="camBar"><button id="camCancel">Cancel</button><button id="shutter" aria-label="Take photo"></button><button id="camFlip">Flip</button></div>
@@ -589,7 +594,8 @@ function watchNew() {
             : `<span class="tag">Done</span>`;
         rem += `<span class="tag">${esc(p.date)}</span>`;
       }
-      const img = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(p.image || "") ? `<img src="${p.image}" alt="" style="max-width:100%;border-radius:8px">` : "";
+      if (!$("pTitle").value.trim() && !$("pMsg").value.trim() && !$("pLink").value.trim() && !file && !pdf)
+      return err("Add something to post: text, a link, a photo or a PDF.");
       const link = p.link && /^(https?:\/\/|assignments\/[\w.\-]+\.pdf$)/i.test(p.link) ? `<p><a href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.linkText || "Open link")}</a></p>` : "";
       const pdfOk = /^data:application\/pdf;base64,[A-Za-z0-9+\/=]+$/.test(p.pdf || "");
       if (pdfOk) PDFS["p" + (p.id || p.createdAt)] = p.pdf;
@@ -616,6 +622,11 @@ function watchNew() {
         else await deleteDoc(doc(db, "posts", b.dataset.id));   // the list updates by itself
       } catch (er) { err(er.message); }
     });
+    document.addEventListener("click", e => {
+  const t = e.target.closest(".thumb");
+  if (t) { $("imgBig").src = t.src; $("imgView").classList.remove("hide"); }
+  else if (e.target.closest("#imgView")) $("imgView").classList.add("hide");
+});
     if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(() => {});
     await initFirebase();
     start();
