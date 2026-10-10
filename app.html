@@ -285,7 +285,7 @@
       // if (me && me.rol e === "teacher" && db && !auth.currentUser) { me = null; localStorage.removeItem("fcritUser"); }
       if (!me) return show("roleView");
       fillDrawer();
-      $("hi").innerHTML = "Hi, " + esc((me.name || "").trim().split(" ")[0]) + "<small>Ready to learn something new today?</small>";
+      $("hi").innerHTML = "Hi, " + esc((me.name || "").trim().split(" ")[0]) +(me.role==="student"? "<small>Ready to learn something new today?</small>":"");
       $("tiles").innerHTML = SECTIONS.map(s => `<div class="tile" data-id="${s.id}"><div class="ic" style="background:${s.bg};color:${s.c}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${s.svg}</svg></div>${s.name}</div>`).join("");
       show("homeView");
       watchNew();}
