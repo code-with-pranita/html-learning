@@ -195,6 +195,7 @@
     
     // 2) EDIT THESE FOR YOUR COLLEGE
     const YEARS = ["FE","SE","TE","BE"];
+    const TEACHERS=["kurhadepranav1404@gmail.com", "pranitakurhade641@gmail.com"]
     const BRANCHES = ["Computer Engineering","Computer Science and Engineering","Information Technology","Electronics and Telecommunication","Electrical Engineering","Mechanical Engineering"];
     const DIVISIONS = ["1","2","3"]; // batches
     const SECTIONS = [
@@ -249,7 +250,7 @@
         ({ deleteDoc, addDoc, collection, query, where, onSnapshot, serverTimestamp, getDoc, doc } = F);
         auth = U.getAuth(app);
         signIn = U.signInWithEmailAndPassword; signOutFn = U.signOut;
-        ({ GoogleAuthProvider , signInWuthPopup} = U)
+        ({ GoogleAuthProvider , signInWithPopup} = U)
         await auth.authStateReady();
       } catch (e) {
         db = null; // could not load Firebase: stay in demo mode (this device only)
@@ -334,8 +335,9 @@
 
     // const r = await signInWithPopup(auth, new GoogleAuthProvider());
     const email = r.user.email.toLowerCase();
-    if (email !== "kurhadepranav1404@gmail.com") { await signOutFn(auth); return err("This account is not authorized."); }
-    me = { role:"teacher", name, subject, uid:r.user.uid, email };
+    // 
+    if (!TEACHERS.includes(email)) { await signOutFn(auth); return err("This account is not authorized."); }
+    me = { role:"teacher", name,  subject, uid:r.user.uid, email };
     localStorage.setItem("fcritUser", JSON.stringify(me));
     start();
   } catch (e) { err(e.message); }
