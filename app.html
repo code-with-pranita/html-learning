@@ -433,7 +433,7 @@ function watchNew() {
   const key = me.role === "student" ? `${me.year}_${me.branch}_${me.div}` : "";
   const render = items => {
     const today = new Date().setHours(0,0,0,0);
-    const up = items.filter(p => p.date && new Date(p.date + "T00:00:00") >= today)
+    const up = items.filter(p => p.date && new Date(p.date + "T00:00:00") >= today && !(me.role === "teacher" && hid().includes(String(p.id || p.createdAt))))
       .sort((a, b) => a.date.localeCompare(b.date));
     $("list").innerHTML = up.map(p => {
       const sec = (SECTIONS.find(s => s.id === p.section) || {}).name || "";
@@ -580,7 +580,9 @@ function watchNew() {
     };
     
     // ---- card with reminder countdown ----
+    const hid = () => JSON.parse(localStorage.getItem("fcritHidden") || "[]");
     function card(p) {
+      if (me.role === "teacher" && hid().includes(String(p.id || p.createdAt))) return "";
       if (/^assignments\/[\w.\-]+\.pdf$/i.test(p.file || "")) {
         return `<a class="box filecard" href="${esc(fileHref(p.file))}" target="_blank" rel="noopener"><span class="fi">📄</span><span><b>${esc(p.title)}</b><small>${esc(p.author)}</small></span></a>`;
       }
@@ -603,7 +605,7 @@ function watchNew() {
       const head = phoneOk ? `<a class="callbtn" href="tel:${esc(String(p.phone).replace(/[^\d+]/g, ""))}">📞 ${esc(p.phone)}</a>` : `<b>${esc(p.title)}</b>`;
       const tg = me.role !== "teacher" ? "" : p.audience ? `<div><span class="tag">${esc(p.audience)}</span></div>`
         : `<div>${p.targets.map(t => `<span class="tag">${esc(t.replaceAll("_"," "))}</span>`).join("")}</div>`;
-      return `<div class="box">${head}<div>${rem}</div><p>${esc(p.message)}</p>${img}${link}${pdfBtn} <small>${esc(p.author)} · ${esc(p.subject)}</small>${tg}${me.role === "teacher" && p.author === me.name ? `<div><button class="del" data-id="${esc(p.id || p.createdAt)}">Delete this post</button></div>` : ""}</div>`;
+      return `<div class="box">${head}<div>${rem}</div><p>${esc(p.message)}</p>${img}${link}${pdfBtn} <small>${esc(p.author)} · ${esc(p.subject)}</small>${tg}${me.role === "teacher" ? `<div><button class="del" data-id="${esc(p.id || p.createdAt)}" data-mode="me">Delete for me</button> <button class="del" data-id="${esc(p.id || p.createdAt)}" data-mode="all">Delete for everyone</button></div>` : ""}</div>`;
     }
     
     $("list").addEventListener("click", e => {
@@ -613,14 +615,20 @@ function watchNew() {
       const bytes = Uint8Array.from(atob(d.split(",")[1]), c => c.charCodeAt(0));
       window.open(URL.createObjectURL(new Blob([bytes], { type: "application/pdf" })), "_blank");
     });
+    
     $("list").addEventListener("click", async e => {
-      const b = e.target.closest(".del"); if (!b) return;
-      if (!confirm("Delete this post? Students will no longer see it.")) return;   // Cancel keeps the post
-      try {
-        if (!db) { localStorage.setItem("fcritPosts", JSON.stringify(localPosts().filter(p => String(p.id || p.createdAt) !== b.dataset.id))); showLocal(); }
-        else await deleteDoc(doc(db, "posts", b.dataset.id));   // the list updates by itself
-      } catch (er) { err(er.message); }
-    });
+  const b = e.target.closest(".del"); if (!b) return;
+  if (b.dataset.mode === "me") {
+    const h = hid(); h.push(b.dataset.id);
+    localStorage.setItem("fcritHidden", JSON.stringify(h));
+    return void (current.id === "reminders" ? openReminders() : openSection(current.id));
+  }
+  if (!confirm("Delete for everyone? Students will no longer see it.")) return;
+  try {
+    if (!db) { localStorage.setItem("fcritPosts", JSON.stringify(localPosts().filter(p => String(p.id || p.createdAt) !== b.dataset.id))); showLocal(); }
+    else await deleteDoc(doc(db, "posts", b.dataset.id));
+  } catch (er) { err(er.message); }
+});
     document.addEventListener("click", e => {
   const t = e.target.closest(".thumb");
   if (t) { $("imgBig").src = t.src; $("imgView").classList.remove("hide"); }
