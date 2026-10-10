@@ -208,6 +208,7 @@
       {id:"notice", name:"Notices", c:"#b07d00", bg:"#fff2cc", svg:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 20a2 2 0 0 0 4 0"/>'},
       {id:"homework", name:"Homework", c:"#2f9e44", bg:"#dff5e3", svg:'<path d="M4 20l1-4L16 5l3 3L8 19zM14 7l3 3"/>'},
       {id:"contacts", name:"Seniors & Teachers", c:"#c2255c", bg:"#ffe3ec", svg:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>'},
+      {id:"reminders", name:"Reminders", c:"#e8590c", bg:"#fff0e0", svg:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M5 3L2 6M19 3l3 3"/>'},
       {id:"website", name:"Visit Website", c:"#0c8599", bg:"#d3f4f8", svg:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'}
     ];
     
@@ -327,6 +328,7 @@ function watchNew() {
     
     $("tiles").onclick = e => {
       const t = e.target.closest(".tile"); if (!t) return;
+      if (t.dataset.id === "reminders") return void openReminders();
       if (t.dataset.id === "website") return void window.open(WEBSITE_URL, "_blank", "noopener");
       openSection(t.dataset.id);
     };
@@ -417,7 +419,30 @@ function watchNew() {
     }
     $("backBtn").onclick = () => { if (unsub) unsub(); start(); };
     
+    function openReminders() {
+  current = { id: "reminders", name: "Reminders" };
+  $("secTitle").textContent = "⏰ Reminders";
+  $("postForm").classList.add("hide");
+  show("sectionView");
+  if (unsub) unsub();
+  const key = me.role === "student" ? `${me.year}_${me.branch}_${me.div}` : "";
+  const render = items => {
+    const today = new Date().setHours(0,0,0,0);
+    const up = items.filter(p => p.date && new Date(p.date + "T00:00:00") >= today)
+      .sort((a, b) => a.date.localeCompare(b.date));
+    $("list").innerHTML = up.map(p => {
+      const sec = (SECTIONS.find(s => s.id === p.section) || {}).name || "";
+      return `<p style="color:#fff;margin:12px 0 2px"><b>${esc(sec)}</b></p>` + card(p);
+    }).join("") || "<p>No upcoming deadlines.</p>";
+  };
+  if (!db) return render(localPosts().filter(p => me.role === "student" ? p.targets.includes(key) : p.author === me.name));
+  const q = me.role === "student"
+    ? query(collection(db,"posts"), where("targets","array-contains",key))
+    : query(collection(db,"posts"), where("authorUid","==",me.uid));
+  unsub = onSnapshot(q, snap => render(snap.docs.map(d => ({ ...d.data(), id: d.id }))), e => err(e.message));
+}
     // ---- clock-style date wheel ----
+
     const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     const yr = new Date().getFullYear();
     const cols = { D: $("wD"), M: $("wM"), Y: $("wY") };
