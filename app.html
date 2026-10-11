@@ -360,7 +360,10 @@ function watchNew() {
   if (!name || !subject) return err("Enter your name and subject.");
   try {
     const U = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
-    const r = await U.signInWithPopup(auth, new U.GoogleAuthProvider());
+    //const r = await U.signInWithPopup(auth, new U.GoogleAuthProvider());
+    const prov = new U.GoogleAuthProvider();
+prov.setCustomParameters({ prompt: "select_account", login_hint: $("tEmail").value.trim() });
+const r = await U.signInWithPopup(auth, prov);
 
     // const r = await signInWithPopup(auth, new GoogleAuthProvider());
     const email = r.user.email.toLowerCase();
