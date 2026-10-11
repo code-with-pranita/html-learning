@@ -80,6 +80,22 @@
 #imgBig{max-width:100%;max-height:100%;object-fit:contain}
     .callbtn{display:inline-block;background:#e8f7ee;color:#0b7a3e;border:1px solid #b6e3c8;border-radius:10px;padding:10px 16px;font-weight:700;font-size:18px;text-decoration:none}
     .tile{position:relative} .tile .nb{position:absolute;top:-6px;right:-4px;margin:0;display:flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 7px;box-sizing:border-box;border-radius:999px;background:linear-gradient(135deg,#ff5a5f,#e03131);color:#fff;font-size:14px;font-weight:800;line-height:1;border:2px solid #fff;box-shadow:0 4px 10px rgba(224,49,49,.5);animation:nbp 1.6s ease-in-out infinite} @keyframes nbp{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+
+    #list{padding-bottom:96px}
+#composer{position:fixed;left:0;right:0;bottom:0;z-index:8;background:rgba(10,30,100,.95);padding:8px 10px calc(8px + env(safe-area-inset-bottom))}
+#attach{max-width:520px;margin:0 auto;color:#fff;font-size:14px}
+#attach p{margin:4px 0}
+#attach #upMsg{color:#ffd0cc}
+#attach button.link{color:#cfe2ff}
+#composerIn{max-width:520px;margin:0 auto;display:flex;align-items:flex-end;gap:6px}
+#composerIn textarea{flex:1;min-width:0;margin:0;height:44px;max-height:120px;border-radius:22px;padding:11px 16px;resize:none;border:0;overflow-y:auto}
+.ibtn{position:relative;flex:none;width:44px;height:44px;margin:0;padding:0;border-radius:50%;background:#eef3ff;color:#1f4fd8;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+#fPdf,#fPhoto{display:contents}
+#postBtn{flex:none;width:48px;height:48px;margin:0;padding:0;border-radius:50%;background:#25d366;border:0;font-size:0;color:#fff}
+#postBtn::after{content:"\27A4";font-size:22px}
+#postBtn:disabled{opacity:.6}
+#postForm details{margin-top:8px}
+#postForm summary{cursor:pointer;color:#1f5fd1;padding:6px 0}
     </style></head><body>
     <div id="splash"><div id="splashArt">
     <svg viewBox="0 0 320 210" xmlns="http://www.w3.org/2000/svg" aria-label="Excited students">
@@ -155,8 +171,8 @@
     <div id="sectionView" class="hide">
       <button class="link" id="backBtn">&larr; Home</button>
       <h2 id="secTitle"></h2>
-      <div id="postForm" class="box hide">
-        <b>Add to this section</b>
+       <div id="postForm" class="box hide">
+      <!-- <b>Add to this section</b>
         <input id="pPhone" type="tel" inputmode="tel" placeholder="Phone number" class="hide">
         <input id="pTitle" placeholder="Title">
         <textarea id="pMsg" rows="3" placeholder="Details"></textarea>
@@ -181,7 +197,43 @@
         <label>Batches</label><div id="pDivs" class="chk"></div>
         <button id="postBtn">Post</button>
       </div>
-      <div id="list"></div>
+      <div id="list"></div> -->
+      <div id="postForm" class="hide">
+        <div class="box">
+          <b>Add to this section</b>
+          <input id="pPhone" type="tel" inputmode="tel" placeholder="Phone number" class="hide">
+          <label>Who should see this?</label>
+          <div class="grid"><select id="pYear"></select><select id="pBranch"></select></div>
+          <div id="pDivs" class="chk"></div>
+          <details>
+            <summary>More options (title, link, date)</summary>
+            <input id="pTitle" placeholder="Title (optional)">
+            <input id="pLink" placeholder="Link (optional)">
+            <div id="fDate">
+              <label style="display:block;margin:6px 0"><input type="checkbox" id="dateOn" style="width:auto;margin-right:6px">Add a date (used for reminders)</label>
+              <div id="wheel" class="hide"><div class="band"></div><div class="col" id="wD"></div><div class="col" id="wM"></div><div class="col" id="wY"></div></div>
+              <input id="pDate" type="hidden">
+            </div>
+          </details>
+        </div>
+        <div id="composer">
+          <div id="attach">
+            <div id="photoPrev" class="hide"><img id="prevImg" alt="" style="height:56px;border-radius:8px;vertical-align:middle"> <button type="button" class="link" id="rmPhoto">✕ Remove photo</button></div>
+            <div id="pdfPrev" class="hide"><b id="pdfName"></b> <button type="button" class="link" id="rmPdf">✕ Remove PDF</button></div>
+            <p id="upMsg" class="hide"></p>
+          </div>
+          <div id="composerIn">
+            <textarea id="pMsg" rows="1" placeholder="Type a message"></textarea>
+            <div id="fPdf"><label class="ibtn" id="pdfBtn" title="Attach PDF"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11l-8.5 8.5a5 5 0 0 1-7-7L14 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7"/></svg><input id="pdfInput" type="file" accept="application/pdf,.pdf" class="vh"></label></div>
+            <div id="fPhoto">
+              <label class="ibtn" id="galBtn" title="Photo from gallery"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 9"/></svg><input id="galInput" type="file" accept="image/*" class="vh"></label>
+              <button type="button" id="camBtn" class="ibtn" title="Take photo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13.5" r="3.5"/></svg></button>
+              <input id="camInput" type="file" accept="image/*" capture="environment" class="hide">
+            </div>
+            <button id="postBtn" aria-label="Send">Post</button>
+          </div>
+        </div>
+      </div>
     </div>
     
     <div id="doneView" class="box done hide">
@@ -401,7 +453,7 @@ const r = await U.signInWithPopup(auth, prov);
       $("postForm").querySelector("b").textContent = "Add to " + current.name;
       $("pTitle").placeholder = c.title + " (optional)";
       $("pMsg").classList.toggle("hide", !c.msg);
-      if (c.msg) $("pMsg").placeholder = c.msg + " (optional)";
+      // if (c.msg) $("pMsg").placeholder = c.msg + " (optional)";
       $("pLink").classList.toggle("hide", !c.link);
       if (c.link) $("pLink").placeholder = c.link + " (optional)";
       $("pTitle").value = $("pMsg").value = $("pLink").value = "";
@@ -638,6 +690,7 @@ const r = await U.signInWithPopup(auth, prov);
   else if (e.target.closest("#imgView")) $("imgView").classList.add("hide");
 });
     if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(() => {});
+    $("pMsg").addEventListener("input", () => { const t = $("pMsg"); t.style.height = "44px"; t.style.height = Math.min(t.scrollHeight, 120) + "px"; });
     await initFirebase();
     start();
     </script></body></html>
