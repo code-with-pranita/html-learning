@@ -295,6 +295,7 @@
    
     const builtIn = id => [];
     const $ = id => document.getElementById(id);
+    const SPLASH_IMG="";
     if (SPLASH_IMG) $("splashArt").innerHTML = `<img src="${SPLASH_IMG}" alt="">`;
     setTimeout(() => { $("splash").classList.add("out"); setTimeout(() => $("splash").remove(), 600); }, 2500);
     const localPosts = () => JSON.parse(localStorage.getItem("fcritPosts") || "[]");
