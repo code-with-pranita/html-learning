@@ -292,9 +292,9 @@
     }];
     const fileHref = f => f;   // where a card's file lives
     const PDFS = {};
-    const builtIn = id => me && me.role === "student" ? BUILT_IN.filter(p => p.section === id && p.years.includes(me.year)) : [];
+   
+    const builtIn = id => [];
     const $ = id => document.getElementById(id);
-    const SPLASH_IMG = ""; // paste a photo link or data URL here to show a real photo instead of the drawing
     if (SPLASH_IMG) $("splashArt").innerHTML = `<img src="${SPLASH_IMG}" alt="">`;
     setTimeout(() => { $("splash").classList.add("out"); setTimeout(() => $("splash").remove(), 600); }, 2500);
     const localPosts = () => JSON.parse(localStorage.getItem("fcritPosts") || "[]");
